@@ -22,8 +22,17 @@ class TestRunner
 public:
     static TestRunner& Instance();
 
-template <typename T> char RegisterTest(char* name);
-int RunAll(int argc, char *argv[]);
+    template <typename T> char RegisterTest(char *name) {
+        if ( std::find_if( begin(m_tests), end(m_tests), [&name](QSharedPointer<QObject>& elem)
+        { return elem->objectName() == name; }) == end(m_tests) ) {
+            QSharedPointer<QObject> test(new T());
+            test->setObjectName(name);
+            m_tests.push_back(test);
+        }
+        return char(1);
+    }
+
+    int RunAll(int argc, char *argv[]);
 
 private:
    std::list<QSharedPointer<QObject>> m_tests;
