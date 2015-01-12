@@ -1,3 +1,10 @@
+/* 
+ * Thanks to 
+ * https://marcoarena.wordpress.com/2012/06/23/increase-your-qtest-productivity
+ *
+ * @aroquemaurel
+ */
+
 #ifndef TESTRUNNER_H
 #define TESTRUNNER_H
 
@@ -9,42 +16,14 @@
 #include <list>
 #include <iostream>
 
-//////////////////////////////////////////////////////////////////////////
 // Test Runner allows automatic execution of tests
 class TestRunner
 {
 public:
+    static TestRunner& Instance();
 
-static TestRunner& Instance()
-{
-   static TestRunner instance;
-   return instance;
-}
-
-template <typename T>
-char RegisterTest(char* name)
-{
-   if ( std::find_if( begin(m_tests), end(m_tests), [&name](QSharedPointer<QObject>& elem)
-   { return elem->objectName() == name; }) == end(m_tests) )
-    {
-      QSharedPointer<QObject> test(new T());
-      test->setObjectName(name);
-      m_tests.push_back(test);
-   }
-   return char(1);
-}
-
-int RunAll(int argc, char *argv[])
-{
-   int errorCode = 0;
-   std::for_each( begin(m_tests), end(m_tests), [&] (QSharedPointer<QObject>& test)
-   {
-      errorCode |= QTest::qExec(test.data(), argc, argv);
-      std::cout << std::endl;
-   } );
-
-   return errorCode;
-}
+template <typename T> char RegisterTest(char* name);
+int RunAll(int argc, char *argv[]);
 
 private:
    std::list<QSharedPointer<QObject>> m_tests;
